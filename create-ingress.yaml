@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: myingress
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+spec:
+  tls:
+  - hosts:
+    - nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud
+    secretName: teknopark-hyperledger-iot
+  rules:
+  - host: nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nodered
+          servicePort: 1880

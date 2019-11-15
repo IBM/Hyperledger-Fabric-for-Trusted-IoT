@@ -1,0 +1,62 @@
+{
+    "name": "basic-network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org1",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "channel1": {
+            "orderers": [
+                "orderer"
+            ],
+            "peers": {
+                "org1peer2": {},
+                "org2peer2": {}
+            }
+        }
+    },
+    "organizations": {
+        "Org1": {
+            "mspid": "Org1MSP",
+            "peers": [
+                "org1peer2"
+            ],
+            "certificateAuthorities": [
+                "caorg1"
+            ]
+        },
+        "Org2": {
+            "mspid": "Org2MSP",
+            "peers": [
+                "org2peer2"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer": {
+            "url": "grpc://orderer:31010"
+        }
+    },
+    "peers": {
+        "org1peer2": {
+            "url": "grpc://org1peer2:30210"
+        },
+        "org2peer2": {
+            "url": "grpc://org2peer2:30410"
+        }
+    },
+    "certificateAuthorities": {
+        "caorg1": {
+            "url": "http://caorg1:7054",
+            "caName": "caorg1"
+        }
+    }
+}

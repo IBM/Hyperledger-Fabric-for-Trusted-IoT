@@ -1,0 +1,149 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: org2peer2
+spec:
+  type: NodePort
+  selector:
+    app: org2peer2
+  ports:
+  - protocol: TCP
+    targetPort: 30410
+    port: 30410
+    nodePort: 30410
+    name: grpc
+  - protocol: TCP
+    targetPort: 30411
+    port: 30411
+    nodePort: 30411
+    name: events
+  - protocol: TCP
+    port: 5984
+    name: couchdb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: org2peer2
+  labels: 
+    app: org2peer2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: org2peer2
+  template:
+    metadata:
+      labels:
+        app: org2peer2
+    spec:
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: filepvc
+      - name: dind-storage
+        emptyDir: {}
+
+      containers:
+      - name: org2peer2
+        image: hyperledger/fabric-peer:1.4.0
+        command: ["sh", "-c", "sleep 1 && peer node start"]
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"
+        - name: CORE_PEER_ADDRESSAUTODETECT
+          value: "true"
+        - name: CORE_PEER_NETWORKID
+          value: nid1
+        - name: CORE_PEER_ID
+          value: org2peer2
+        - name: CORE_PEER_ADDRESS
+          value: org2peer2:30410
+        #- name: CORE_PEER_CHAINCODELISTENADDRESS
+        #  value: "localhost:30410"
+        #CORE_PEER_GOSSIP_EXTERNALENDPOINT for Hyperledger Explorer
+        - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+          value: org2peer2:30410
+        - name: CORE_PEER_LISTENADDRESS
+          value: 0.0.0.0:30410
+        - name: CORE_PEER_EVENTS_ADDRESS
+          value: 0.0.0.0:30411
+        - name: CORE_PEER_GOSSIP_BOOTSTRAP
+          value: org2peer2:30410
+        - name: CORE_PEER_GOSSIP_ENDPOINT
+          value: org2peer2:30410
+        - name: CORE_PEER_GOSSIP_ORGLEADER
+          value: "false"
+        - name: CORE_PEER_GOSSIP_USELEADERELECTION
+          value: "true"
+        - name: CORE_PEER_GOSSIP_SKIPHANDSHAKE
+          value: "true"
+        - name: CORE_PEER_COMMITTER_ENABLED
+          value: "true"
+        - name: CORE_PEER_PROFILE_ENABLED
+          value: "true"
+        - name: CORE_VM_ENDPOINT
+          value: "http://localhost:2375"
+        - name: CORE_PEER_LOCALMSPID
+          value: Org2MSP
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /shared/artifacts/crypto-config/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp/
+        - name: FABRIC_LOGGING_SPEC
+          value: info
+        - name: CORE_LOGGING_PEER
+          value: info
+        - name: CORE_LOGGING_CAUTHDSL
+          value: info
+        - name: CORE_LOGGING_GOSSIP
+          value: info
+        - name: CORE_LOGGING_LEDGER
+          value: info
+        - name: CORE_LOGGING_MSP
+          value: info
+        - name: CORE_LOGGING_POLICIES
+          value: info
+        - name: CORE_LOGGING_GRPC
+          value: info
+        - name: CORE_PEER_TLS_ENABLED
+          value: "false"
+        - name: CORE_LEDGER_STATE_STATEDATABASE
+          value: "CouchDB"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+          value: "localhost:5984"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+          value: "admin"
+        - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+          value: "admin"
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric/
+        - name: ORDERER_URL
+          value: orderer:31010
+        - name: GODEBUG
+          value: "netdns=go"
+        - name: CORE_VM_DOCKER_ATTACHSTDOUT
+          value: "true"
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume
+        ports:
+        - containerPort: 30410
+        - containerPort: 30411
+
+      - name: couchdb
+        image: hyperledger/fabric-couchdb
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"
+        - name: COUCHDB_USER
+          value: "admin"
+        - name: COUCHDB_PASSWORD
+          value: "admin"
+
+      - name: dind
+        image: docker:18.05-dind
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: dind-storage
+            mountPath: /var/lib/docker

@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate-channeltx
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: generate-channeltx
+    spec:
+      restartPolicy: "Never"
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: filepvc
+
+      containers:
+      - name: generate-channeltx
+        image: hyperledger/fabric-tools:1.4.0
+        imagePullPolicy: Always
+        command: ["sh", "-c", "cd shared/artifacts && export FABRIC_CFG_PATH=$PWD && configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel1.tx -channelID channel1"]
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume
