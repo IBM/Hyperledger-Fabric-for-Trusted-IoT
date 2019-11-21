@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filepvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "ibmc-file-silver"
+  labels:
+    billingType: "monthly"
+    region: us-south
+    zone: dal10
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi

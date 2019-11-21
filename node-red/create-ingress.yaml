@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: myingress
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+spec:
+  tls:
+  - hosts:
+    - node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
+    secretName: {{CHANGE-HERE}}
+  rules:
+  - host: node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: node-red
+          servicePort: 1880

@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer
+spec:
+  selector:
+    app: orderer
+  ports:
+  - protocol: TCP
+    targetPort: 31010
+    port: 31010
+    name: grpc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer
+  labels:
+    app: orderer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer
+  template:
+    metadata:
+      labels:
+        app: orderer
+    spec:
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: filepvc
+
+      containers:
+      - name: orderer
+        image: hyperledger/fabric-orderer:1.4.0
+        command: ["sh", "-c", "sleep 2 && orderer"]
+        env:
+        - name: TZ
+          value: "Europe/Istanbul"
+        - name: ORDERER_CFG_PATH
+          value: /shared/artifacts/channel-artifacts
+        - name: ORDERER_GENERAL_LEDGERTYPE
+          value: file
+        - name: ORDERER_FILELEDGER_LOCATION
+          value: /shared/artifacts/ledger/orderer/channel-artifacts
+        - name: ORDERER_GENERAL_BATCHTIMEOUT
+          value: 1s
+        - name: ORDERER_GENERAL_BATCHSIZE_MAXMESSAGECOUNT
+          value: "10"
+        - name: ORDERER_GENERAL_MAXWINDOWSIZE
+          value: "1000"
+        - name: ORDERER_GENERAL_ORDERERTYPE
+          value: solo
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: ORDERER_GENERAL_LISTENPORT
+          value: "31010"
+        - name: ORDERER_GENERAL_LOGLEVEL
+          value: debug
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /shared/artifacts/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/msp
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        - name: ORDERER_GENERAL_GENESISMETHOD
+          value: file
+        - name: ORDERER_GENERAL_GENESISFILE
+          value: /shared/artifacts/channel-artifacts/genesis.block
+        - name: ORDERER_GENERAL_GENESISPROFILE
+          value: initial
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "false"
+        - name: GOinfo
+          value: "netdns=go"
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume
+        ports:
+        - containerPort: 31010
+---

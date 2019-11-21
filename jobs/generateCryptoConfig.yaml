@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: generate-cryptoconfig
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: generate-cryptoconfig
+    spec:
+      restartPolicy: "Never"
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: filepvc
+
+      containers:
+      - name: generate-cryptoconfig
+        image: hyperledger/fabric-tools:1.4.0
+        imagePullPolicy: Always
+        #command: ["sh", "-c", "cd shared/artifacts && cryptogen generate --config=crypto-config.yaml && cd crypto-config/peerOrganizations/org1.example.com/ca && echo $(ls)"]
+        command: ["sh", "-c", "cd shared/artifacts && cryptogen generate --config=crypto-config.yaml && cd crypto-config/peerOrganizations/org1.example.com/ca && file=$(ls -R | grep 'sk$') && mv $file ./key.pem "]
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume

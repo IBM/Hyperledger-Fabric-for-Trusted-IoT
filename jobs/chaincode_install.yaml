@@ -1,0 +1,63 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: chaincodeinstall
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: chaincodeinstall
+    spec:
+      restartPolicy: "Never"
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: filepvc
+          
+      containers:
+      - name: chaincodeinstall1
+        image: hyperledger/fabric-tools:1.4.0
+        imagePullPolicy: Always
+        command: ["sh", "-c", "cp -R /shared/artifacts/chaincode/ /opt/gopath/src/ && peer chaincode install -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} -p iot_chaincode"]
+        env:
+        - name: CHAINCODE_NAME
+          value: "cc"
+        - name: CHAINCODE_VERSION
+          value: "1.0"
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /shared/artifacts/crypto-config/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+        - name: CORE_PEER_LOCALMSPID
+          value: Org1MSP
+        - name: CORE_PEER_ADDRESS
+          value: org1peer2:30210
+        - name: GODEBUG
+          value: "netdns=go"
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume
+
+      - name: chaincodeinstall2
+        image: hyperledger/fabric-tools:1.4.0
+        imagePullPolicy: Always
+        command: ["sh", "-c", "cp -R /shared/artifacts/chaincode/ /opt/gopath/src/ && peer chaincode install -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} -p iot_chaincode"]
+        env:
+        - name: CHAINCODE_NAME
+          value: "cc"
+        - name: CHAINCODE_VERSION
+          value: "1.0"
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /shared/artifacts/crypto-config/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp
+        - name: CORE_PEER_LOCALMSPID
+          value: Org2MSP
+        - name: CORE_PEER_ADDRESS
+          value: org2peer2:30410
+        - name: GODEBUG
+          value: "netdns=go"
+        volumeMounts:
+        - mountPath: /shared
+          name: myvolume
