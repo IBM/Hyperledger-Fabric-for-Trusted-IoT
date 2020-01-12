@@ -4,19 +4,16 @@ kind: Service
 metadata:
   name: org1peer1
 spec:
-  type: NodePort
   selector:
     app: org1peer1
   ports:
   - protocol: TCP
     targetPort: 30110
     port: 30110
-    nodePort: 30110
     name: grpc
   - protocol: TCP
     targetPort: 30111
     port: 30111
-    nodePort: 30111
     name: events
   - protocol: TCP
     port: 5984
@@ -131,7 +128,7 @@ spec:
         - containerPort: 30111
 
       - name: couchdb
-        image: hyperledger/fabric-couchdb
+        image: hyperledger/fabric-couchdb:0.4.14
         env:
         - name: TZ
           value: "Europe/Istanbul"

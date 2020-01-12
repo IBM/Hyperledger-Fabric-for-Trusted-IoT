@@ -7,13 +7,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud
-    secretName: teknopark-hyperledger-iot
+    - node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
+    secretName: {{CHANGE-HERE}}
   rules:
-  - host: nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud
+  - host: node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
     http:
       paths:
       - path: /
         backend:
-          serviceName: nodered
+          serviceName: node-red
           servicePort: 1880

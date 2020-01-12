@@ -4,14 +4,12 @@ kind: Service
 metadata:
   name: orderer
 spec:
-  type: NodePort
   selector:
     app: orderer
   ports:
   - protocol: TCP
     targetPort: 31010
     port: 31010
-    nodePort: 31010
     name: grpc
 ---
 apiVersion: apps/v1

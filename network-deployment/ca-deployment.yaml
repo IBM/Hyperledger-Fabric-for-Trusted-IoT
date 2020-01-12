@@ -4,14 +4,12 @@ kind: Service
 metadata:
   name: caorg1
 spec:
-  type: NodePort
   selector:
     app: caorg1
   ports:
   - protocol: TCP
     port: 7054
     targetPort: 7054
-    nodePort: 30054
     name: http
 ---
 apiVersion: apps/v1
