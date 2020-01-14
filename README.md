@@ -47,15 +47,15 @@
 Open a new Terminal window and execute following commands to be sure you have installed prerequisites.
 
 ```bash
-$ docker version
-$ ibmcloud --version
+    docker version
+    ibmcloud --version
 ```
 
 Clone this repository in a folder your choice:
 
 ```bash
-$ git clone https://github.com/yigitpolat/Hyperledger-IoT
-$ cd Hyperledger-IoT
+    git clone https://github.com/yigitpolat/Hyperledger-IoT
+    cd Hyperledger-IoT
 ```
 
 ### 2. Create and Access IBM Cloud Kubernetes Cluster
@@ -64,7 +64,7 @@ As Hyperledger Fabric is a network consists of several components, we use micros
 
 #### 2.1. Create a Kubernetes Cluster on IBM Cloud
 
-Create a Kubernetes Cluster from [here](https://cloud.ibm.com/kubernetes/catalog/cluster/create).
+* Create a Kubernetes Cluster from [here](https://cloud.ibm.com/kubernetes/catalog/cluster/create).
 
 > Note1: Depending on your IBM Cloud Account type you can either create Free or Standard Cluster.
 >
@@ -79,7 +79,7 @@ Once your cluster provisioned (status set to normal), perform the “Gain Access
 * Execute the following command to verify that the kubectl commands run properly.
 
 ```bash
-$ kubectl get nodes
+    kubectl get nodes
 ```
 
 <p align="center"><img src="docs/screen1.gif"></p>
@@ -90,25 +90,17 @@ $ kubectl get nodes
 
 A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator. A PersistentVolumeClaim (PVC) is a request for storage by a user. We will use this storage to store our configuration files and chaincode.
 
-##### Option 1
-
-* If you have **Free Cluster** use the following command.
+* If you have Free Cluster use the following command.
 
 ```bash
-$ cd volume
-$ kubectl create -f createPVandPVC.yaml
-persistentvolumeclaim/filepvc created
-persistentvolume/myvolume created
+cd volume
+    kubectl create -f createPVandPVC.yaml
 ```
 
-##### Option 2
-
-* If you have **Standard Cluster**, first change the region and zone variables inside the createPVC.yaml according to your cluster location and use the following command.
+* If you have Standard Cluster, first change the region and zone variables inside the createPVC.yaml according to your cluster location and use the following command.
 
 ```bash
-$ cd volume
-$ kubectl create -f createPVC.yaml
-persistentvolumeclaim/filepvc created
+    kubectl create -f createPVC.yaml
 ```
 
 > Note: You have to wait until the PVC will be bound to a storage.
@@ -120,13 +112,12 @@ persistentvolumeclaim/filepvc created
 Once our PV and PVC are created, you are able to copy the local files to the storage on the cloud.
 
 ```bash
-$ cd ../jobs
-$ kubectl apply -f copyArtifactsJob.yaml
-$ pod=$(kubectl get pods --selector=job-name=copyartifacts --output=jsonpath={.items..metadata.name})
-$ kubectl cp ../artifacts $pod:/shared/
-$ kubectl get pods -w
-NAME                  READY   STATUS      RESTARTS   AGE
-copyartifacts-        0/1     Completed   0         
+cd -
+    cd jobs
+    kubectl apply -f copyArtifactsJob.yaml
+    pod=$(kubectl get pods --selector=job-name=copyartifacts --output=jsonpath={.items..metadata.name})
+    kubectl cp ../artifacts $pod:/shared/
+    kubectl get pods -w
 ```
 
 After your copyartifacts pod become completed, you can continue with the following step.
@@ -142,29 +133,25 @@ Cryptogen is an utility for generating Hyperledger Fabric key material. It is pr
 * The following command will generate MSPs (Membership Service Providers)
 
 ```bash
-$ kubectl apply -f generateCryptoConfig.yaml
-job.batch/generate-cryptoconfig created
+    kubectl apply -f generateCryptoConfig.yaml
 ```
 
 * The following command will generate 'genesis.block' which will be used to deploy Orderer.
 
 ```bash
-$ kubectl apply -f generateGenesisBlock.yaml
-job.batch/generate-genesisblock created
+    kubectl apply -f generateGenesisBlock.yaml
 ```
 
 * The following command will generate 'channel1.tx' which will be used to create channel.
 
 ```bash
-$ kubectl apply -f generateChanneltx.yaml
-job.batch/generate-channeltx created
+    kubectl apply -f generateChanneltx.yaml
 ```
 
 * The following command will generate 'Org1MSPanchors.tx' and 'Org2MSPanchors.tx' which will be used to set the Anchor Peers in the network.
 
 ```bash
-$ kubectl apply -f generateAnchorPeerMSPs.yaml
-job.batch/generateanchorpeermsps created
+    kubectl apply -f generateAnchorPeerMSPs.yaml
 ```
 
 > Note: A peer node on a channel that all other peers can discover and communicate with. Each Member on a channel has an anchor peer (or multiple anchor peers to prevent single point of failure), allowing for peers belonging to different Members to discover all existing peers on a channel.
@@ -178,20 +165,8 @@ You have completed prerequired steps for the network deployment. Now, you will d
 > Note: In the following step, wait your deployments status to become running to prevent any conflicts. You can see your pod status by executing "kubectl get pods"
 
 ```bash
-$ cd ../network-deployment
-$ sh deployAll.sh
-service/orderer created
-deployment.apps/orderer created
-service/caorg1 created
-deployment.apps/caorg1 created
-service/org1peer1 created
-deployment.apps/org1peer1 created
-service/org1peer2 created
-deployment.apps/org1peer2 created
-service/org2peer1 created
-deployment.apps/org2peer1 created
-service/org2peer2 created
-deployment.apps/org2peer2 created
+    cd ../network-deployment
+    sh deployAll.sh
 ```
 
 <p align="center"><img src="docs/screen5.png"></p>
@@ -205,16 +180,14 @@ You should have your Hyperledger Fabric components are running. In the following
 * The following command will create a channel named 'channel1'
 
 ```bash
-$ cd ../jobs
-$ kubectl apply -f create_channel.yaml
-job.batch/createchannel created
+    cd ../jobs
+    kubectl apply -f create_channel.yaml
 ```
 
 * The following command will join all the peers to the 'channel1'
 
 ```bash
-$ kubectl apply -f join_channel.yaml
-job.batch/joinchannel created
+    kubectl apply -f join_channel.yaml
 ```
 
 <p align="center"><img src="docs/screen6.png"></p>
@@ -222,22 +195,19 @@ job.batch/joinchannel created
 * The following command will install chaincode to peers (org1peer2, org2peer2). These peers will be your endorser peer.
 
 ```bash
-$ kubectl apply -f chaincode_install.yaml
-job.batch/chaincodeinstall created
+    kubectl apply -f chaincode_install.yaml
 ```
 
 * The following command will instantiate the installed chaincode to the channel. Besides, sets the endorsement policy as requests 1 signature from each of the two organizations.
 
 ```bash
-$ kubectl apply -f chaincode_instantaite.yaml
-job.batch/chaincodeinstantiate created
+    kubectl apply -f chaincode_instantaite.yaml
 ```
 
 * The following command will update the channel and will set peers (org1peer1, org2peer1) as Anchor Peers.
 
 ```bash
-$ kubectl apply -f updateAnchorPeers.yaml
-job.batch/update-anchorpeers created
+    kubectl apply -f updateAnchorPeers.yaml
 ```
 
 <p align="center"><img src="docs/screen7.png"></p>
@@ -248,14 +218,12 @@ Up until now, you have developed Hyperledger Fabric Network which might be a bac
 
 > Note: For the following steps, you must have 'DockerHub Account' in order to push and pull your container images. You can create an account from [here](https://hub.docker.com).
 
-#### 4.1 Build Docker image for Rest API
-
 * The following commands will create a container image and push it to your container registry.
 
 ```bash
-$ cd ../API
-$ docker build . -t <your_account_name>/rest-api
-$ docker push <your_account_name>/rest-api
+    cd ../API
+    docker build . -t <your_account_name>/rest-api
+    docker push <your_account_name>/rest-api
 ```
 
 <p align="center"><img src="docs/screen8.png"></p>
@@ -264,22 +232,16 @@ $ docker push <your_account_name>/rest-api
 * If you are using a private registry, the Kubernetes Service needs permissions to pull your private container image from your registry.  You can provide the Kubernetes Service with your docker secrets by running this command:
 
 ```bash
-$ kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+    kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
 ```
-
-#### 4.2 Deploy and Expose Rest API
 
 * The following commands will first pull the container image from your registry and create a deployment named "rest-api", then create a Kubernetes Service which exposes this deployment
 
 ```bash
-$ cd ..
-$ kubectl create deployment rest-api --image=<your_account_name>/rest-api
-deployment.apps/rest-api created
-```
+    cd ..
+    kubectl run rest-api --image=<your_account_name>/rest-api --port=3000
+    kubectl apply -f <insert path of rest-api-svc.yaml>
 
-```bash
-$ kubectl expose deployment rest-api --port=3000 --target-port=3000
-service/rest-api exposed
 ```
 
 <p align="center"><img src="docs/screen10.png"></p>
@@ -290,41 +252,36 @@ Node-RED dashboard will be your front-end. You will be able to see incoming sens
 
 > Note: There is Node-RED service in the IBM Cloud Catalog. However, in this pattern you will use Node-RED inside a container.
 >
-> Note: If you wish to use Node-RED service you can import the flow by using [this](./node-red/node-red_flow.json)
+> Note: If you wish to use Node-RED service you can import the flow by using [this](./nodered_flow.json)
 
-* The following commands will first pull the container image from DockerHub and create a deployment named "node-red", then create a Kubernetes Service which exposes this deployment
+* The following commands will first pull the container image from DockerHub and create a deployment named "nodered", then create a Kubernetes Service which exposes this deployment
 
 ```bash
-$ cd node-red
-$ kubectl create deployment node-red --image=yigitpolat/hyperledger-iot-nodered
-deployment.apps/node-red created
-
+    kubectl run nodered --image=yigitpolat/hyperledger-iot-nodered --port=1880
 ```
 
-#### Option 1
-
-* If you have **Free Cluster** use the following command to make nodered deployment accesible from the network.
+* If you have Free Cluster use the following command to make nodered deployment accesible from the network.
 
 ```bash
-$ kubectl apply -f node-red-svc-nodePort.yaml
-service/node-red created
+kubectl apply -f <insert path of node-red-svc.yaml>
+    
 ```
 
-#### Option 2
+* If you have a Standard Cluster, IBM Cloud will provide you an Ingress Controller and Application Load Balancer which you can use to access your cluster from network. So that, you need to create ingress rules by following. 
 
-* If you have a **Standard Cluster**, IBM Cloud will provide you an Ingress Controller and Application Load Balancer which you can use to access your cluster from network. So that, you need to create ingress rules by following.
-
-Note that, you must modify **hosts** and the **secretName** fields in the "create-ingress.yaml". To learn your Ingress Subdomain and Ingress Secret execute the following commands.
+Note that, you must modify hosts and the secretName fields in the "create-ingress.yaml". To learn your Ingress Subdomain and Ingress Secret execute the following commands.
 
 ```bash
-$ ibmcloud ks cluster-get <your_cluster_name>
+    ibmcloud ks cluster-get <your_cluster_name>
 ```
 
-Now, you can create Node-RED service and Ingress rules.
+Now, you can create Node-RED service and Ingress rules. 
 
 ```bash
-$ kubectl apply -f node-red-svc-clusterIP.yaml
-$ kubectl apply -f create-ingress.yaml
+    kubectl apply -f <insert path of node-red-svc-clusterIP.yaml>
+    
+    kubectl apply -f <insert path of create-ingress.yaml>
+    
 ```
 
 ## Understanding the Application
@@ -333,24 +290,20 @@ Congratulations! You have deployed your very first Hyperledger Fabric - IoT coll
 
 ### Access to Node-RED
 
-##### Option 1
-
-If you have Free Cluster follow the below instructions to access to dashboard.
+* If you have Free Cluster follow the below instructions to access to dashboard.
 
 First, execute the below commands to get your Kubernetes Worker Node's external IP.
 
 ```bash
-$ kubectl get pods -o wide
-$ kubectl get nodes -o wide
+    kubectl get pods -o wide
+    kubectl get nodes
 ```
 
 <p align="center"><img src="docs/screen11.png"></p>
 
 Open your favorite browser and navigate to "Your_external_IP":30002 which will end up with Node-RED service. For example, 52.116.26.52:30002
 
-##### Option 2
-
-If you have Standart Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{HOST-NAME}}.us-south.containers.appdomain.cloud
+* If you have Standart Cluster just navigate to host name of your cluster from the browser. For example, nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud
 
 ### Registration
 
@@ -372,7 +325,7 @@ It is time to create an User Interface to make the application to look fancy. Do
 
 <p align="center"><img src="docs/screen13.png"></p>
 
-Finally, navigate to "Your_External_IP":30002/ui or nodered.{{HOST-NAME}}.us-south.containers.appdomain.cloud/ui to see your dashboard. Now you are able to see your sensor data live on a gauge. Besides, you can query sensor data history from navigating to "Sensor History" tab from the hamburger menu. Remember that, the data history is coming from the Ledger where the data is storing immutablly in the blockchain.
+Finally, navigate to "Your_External_IP":30002/ui or nodered.teknopark-hyperledger-iot.us-south.containers.appdomain.cloud/ui to see your dashboard. Now you are able to see your sensor data live on a gauge. Besides, you can query sensor data history from navigating to "Sensor History" tab from the hamburger menu. Remember that, the data history is coming from the Ledger where the data is storing immutablly in the blockchain.
 
 Here is the screenshots of the final views of the application.
 
