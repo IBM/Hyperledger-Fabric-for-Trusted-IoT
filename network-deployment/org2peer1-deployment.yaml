@@ -23,7 +23,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: org2peer1
-  labels: 
+  labels:
     app: org2peer1
 spec:
   replicas: 1
@@ -120,6 +120,8 @@ spec:
           value: "netdns=go"
         - name: CORE_VM_DOCKER_ATTACHSTDOUT
           value: "true"
+        - name: CORE_CHAINCODE_BUILDER
+          value: hyperledger/fabric-ccenv:1.4
         volumeMounts:
         - mountPath: /shared
           name: myvolume
