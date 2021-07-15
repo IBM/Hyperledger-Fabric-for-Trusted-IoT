@@ -4,7 +4,7 @@
 
 <p align="center"><img src="docs/architecture.png"></p>
 
-1. Watson IoT Platform input node that comes build-in with Node-RED receive events sent from devices (temperature in our case).
+1. Node-RED receives MQTT input from an IoT sensor (or generates simulated data) Temperature readings in this use case.
 2. In order to invoke and query the ledger (to write and read the data) nodes inside the Node-RED perform HTTP requests and returns the response to the APIs.
 3. APIs defined based on Hyperledger Fabric Client SDK for Node.js interact with the chaincode inside the Hyperledger Fabric Network and updates or reads the ledger.
 4. Endorser Peers executes the functions that is defined in the chaincode according the request and sends is to the Orderer.
@@ -32,7 +32,7 @@
 * [Docker](https://docs.docker.com/install/)
 * [Texas Instruments SensorTag](http://www.ti.com/tools-software/sensortag.html#)
 
-> Note: If you are not able to provide SensorTag, it is possible to generate dummy data in the later steps.
+> Note: If you are not able to provide SensorTag, it is possible to generate data in the Node-RED dashboard steps.
 
 ### Steps
 
@@ -126,7 +126,7 @@ $ pod=$(kubectl get pods --selector=job-name=copyartifacts --output=jsonpath={.i
 $ kubectl cp ../artifacts $pod:/shared/
 $ kubectl get pods -w
 NAME                  READY   STATUS      RESTARTS   AGE
-copyartifacts-        0/1     Completed   0         
+copyartifacts-        0/1     Completed   0
 ```
 
 After your copyartifacts pod become completed, you can continue with the following step.
@@ -292,11 +292,15 @@ Node-RED dashboard will be your front-end. You will be able to see incoming sens
 >
 > Note: If you wish to use Node-RED service you can import the flow by using [this](./node-red/node-red_flow.json)
 
-* The following commands will first pull the container image from DockerHub and create a deployment named "node-red", then create a Kubernetes Service which exposes this deployment
+* The following commands will build the Node-RED container image and push it to DockerHub, create a deployment named "node-red", then create a Kubernetes Service which exposes this deployment
+
+* Edit the `Makefile` and enter your `DOCKERHUB_ID:=`
 
 ```bash
 $ cd node-red
-$ kubectl create deployment node-red --image=yigitpolat/hyperledger-iot-nodered
+$ make build
+$ make push
+$ kubectl create deployment node-red --image=<your_account_name>/hyperledger-iot-nodered:1.0.2
 deployment.apps/node-red created
 
 ```
@@ -317,7 +321,7 @@ service/node-red created
 Note that, you must modify **hosts** and the **secretName** fields in the "create-ingress.yaml". To learn your Ingress Subdomain and Ingress Secret execute the following commands.
 
 ```bash
-$ ibmcloud ks cluster-get <your_cluster_name>
+$ ibmcloud ks cluster get --cluster <your_cluster_name>
 ```
 
 Now, you can create Node-RED service and Ingress rules.
@@ -350,11 +354,11 @@ Open your favorite browser and navigate to "Your_external_IP":30002 which will e
 
 ##### Option 2
 
-If you have Standart Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{HOST-NAME}}.us-south.containers.appdomain.cloud
+If you have Standard Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{HOST-NAME}}.us-south.containers.appdomain.cloud
 
 ### Registration
 
-Double click on "Registration" tab, set Status to "Enabled", hit done. Deploy the application from right top corner. Execute the three HTTP Post request respectively.
+Execute the three HTTP Post request respectively.
 
 * First POST will enroll an admin named "admin" to the Certificate Authority of the Organization 1.
 * Second POST will enroll a register and enroll user named "user1" to the Certificate Authority of the Organization 2.
@@ -366,13 +370,13 @@ You will end up with a screen as below. You can see the returning results on the
 
 ### Dashboard
 
-It is time to create an User Interface to make the application to look fancy. Double click on "Dashboard" tab, set Status to "Enabled", hit done. Deploy the application from right top corner.
-
-> Note: Below screenshot shows how to use dummy data generator if you are not able to provide a sensor.
+It is time to create an User Interface to make the application to look fancy.
 
 <p align="center"><img src="docs/screen13.png"></p>
 
-Finally, navigate to "Your_External_IP":30002/ui or nodered.{{HOST-NAME}}.us-south.containers.appdomain.cloud/ui to see your dashboard. Now you are able to see your sensor data live on a gauge. Besides, you can query sensor data history from navigating to "Sensor History" tab from the hamburger menu. Remember that, the data history is coming from the Ledger where the data is storing immutablly in the blockchain.
+Finally, navigate to "Your_External_IP":30002/ui or nodered.{{HOST-NAME}}.us-south.containers.appdomain.cloud/ui to see your dashboard.
+Toggle the `Generate IoT readings` switch to generate simulated IoT sensor data if you are not able to provide a sensor.
+ You will be able to see your sensor data live on a gauge and chart. To query the sensor data history stored on the blockchain, navigate to the "Sensor History" tab from the hamburger menu. The data history is coming from the Ledger where the data is storing immutablly in the blockchain.
 
 Here is the screenshots of the final views of the application.
 
@@ -386,7 +390,7 @@ Instead developing an application with full capabilities, this minimum viable pr
 
 * Adding new functions to chaincode will bring new features to the application
 * According to new functions, API endpoints needed to be updated to fulfill the HTTP requests
-* Dashboard must be modified depending on the upcoming data
+* Dashboard must be modified depending on the incoming MQTT data
 
 ## License
 
