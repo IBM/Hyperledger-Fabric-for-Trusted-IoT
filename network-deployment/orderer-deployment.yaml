@@ -74,6 +74,8 @@ spec:
           value: "false"
         - name: GOinfo
           value: "netdns=go"
+        - name: CORE_CHAINCODE_BUILDER
+          value: hyperledger/fabric-ccenv:1.4
         volumeMounts:
         - mountPath: /shared
           name: myvolume

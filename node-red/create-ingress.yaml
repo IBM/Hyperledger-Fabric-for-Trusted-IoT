@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: myingress
@@ -7,13 +7,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
-    secretName: {{CHANGE-HERE}}
+    - node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
+    secretName: {{INGRESS-SUBDOMAIN}}
   rules:
-  - host: node-red.{{CHANGE-HERE}}.us-south.containers.appdomain.cloud
+  - host: node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: node-red
-          servicePort: 1880
+          service:
+           name: node-red
+           port:
+              number: 1880
