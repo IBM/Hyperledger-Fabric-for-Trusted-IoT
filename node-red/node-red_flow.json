@@ -356,13 +356,13 @@
         "type": "function",
         "z": "e61d7807.20aac8",
         "name": "Generate Temperature Readings",
-        "func": "if( msg.payload === false ) {\n    return null;\n}\nmsg.payload = Math.round(Math.random()*100) ;\nreturn msg;",
+        "func": "if( msg.payload === false ) {\n    return null;\n}\nmsg.payload = \"\" + Math.round(Math.random()*100) ;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 620,
+        "x": 780,
         "y": 160,
         "wires": [
             [
@@ -403,7 +403,7 @@
         "links": [
             "fc9c2af3.67052"
         ],
-        "x": 815,
+        "x": 975,
         "y": 160,
         "wires": []
     },
@@ -454,7 +454,7 @@
         "y": 160,
         "wires": [
             [
-                "c15ea1c5.969918"
+                "b9d5af6d.c3728"
             ]
         ]
     },
@@ -599,7 +599,7 @@
         "type": "function",
         "z": "e61d7807.20aac8",
         "name": "Body / Headers",
-        "func": "temp = msg.payload;\n\nvar date = new Date();\nvar options = { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };\nvar time = date.toLocaleDateString('tr-TR', options);\n\n\nmsg.payload = {'username':'user1','channel':'channel1', 'smartcontract':'cc', 'args': {'sensorID':'sensor1', 'temp':temp,'time':time} };\nmsg.headers = {'content-type':'application/json'};\n\nreturn msg;",
+        "func": "var temp = msg.payload;\n\nvar date = new Date();\nvar options = { timeZone: 'Europe/Istanbul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };\nvar time = date.toLocaleDateString('tr-TR', options);\n\n\nmsg.payload = {'username':'user1','channel':'channel1', 'smartcontract':'cc', 'args': {'sensorID':'sensor1', 'temp':temp,'time':time} };\nmsg.headers = {'content-type':'application/json'};\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -944,6 +944,29 @@
         "wires": [
             [
                 "7c0ac50.df3b4bc"
+            ]
+        ]
+    },
+    {
+        "id": "b9d5af6d.c3728",
+        "type": "delay",
+        "z": "e61d7807.20aac8",
+        "name": "Rate Limit",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "5",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 540,
+        "y": 160,
+        "wires": [
+            [
+                "c15ea1c5.969918"
             ]
         ]
     }
