@@ -175,7 +175,7 @@ job.batch/generateanchorpeermsps created
 
 You have completed prerequired steps for the network deployment. Now, you will deploy the Hyperledger Fabric components, Certificate Authority, Orderer, and Peers to your cluster.
 
-> Note: In the following step, wait your deployments status to become running to prevent any conflicts. You can see your pod status by executing "kubectl get pods"
+> Note: In the following step, wait for your deployments status to become running to prevent any conflicts. You can see your pod status by executing "kubectl get pods"
 
 ```bash
 $ cd ../network-deployment
@@ -307,7 +307,7 @@ deployment.apps/node-red created
 
 #### Option 1
 
-* If you have **Free Cluster** use the following command to make nodered deployment accesible from the network.
+* If you have **Free Cluster** use the following command to make nodered deployment accessible from the network.
 
 ```bash
 $ kubectl apply -f node-red-svc-nodePort.yaml
@@ -321,7 +321,18 @@ service/node-red created
 Note that, you must modify **hosts** and the **secretName** fields in the "create-ingress.yaml". To learn your Ingress Subdomain and Ingress Secret execute the following commands.
 
 ```bash
+$ kubectl config current-context
 $ ibmcloud ks cluster get --cluster <your_cluster_name>
+```
+
+Copy the Ingress subdomain details, eg `my-hyperledger-dee43bc8701fcd5837d6df963718ad39-0000` into the `{{INGRESS-SUBDOMAIN}}` sections of the `create-ingress.yaml` file.
+
+```yaml
+  - hosts:
+    - node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
+    secretName: {{INGRESS-SUBDOMAIN}}
+  rules:
+  - host: node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
 ```
 
 Now, you can create Node-RED service and Ingress rules.
@@ -337,7 +348,7 @@ Congratulations! You have deployed your very first Hyperledger Fabric - IoT coll
 
 ### Access to Node-RED
 
-##### Option 1
+#### Option 1
 
 If you have Free Cluster follow the below instructions to access to dashboard.
 
@@ -352,9 +363,9 @@ $ kubectl get nodes -o wide
 
 Open your favorite browser and navigate to "Your_external_IP":30002 which will end up with Node-RED service. For example, 52.116.26.52:30002
 
-##### Option 2
+#### Option 2
 
-If you have Standard Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{HOST-NAME}}.us-south.containers.appdomain.cloud
+If you have Standard Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
 
 ### Registration
 
