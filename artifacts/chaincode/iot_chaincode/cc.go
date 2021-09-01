@@ -91,7 +91,7 @@ func (s *SmartContract) getHistory(stub shim.ChaincodeStubInterface, args []stri
 		return shim.Error(err.Error())
 	}
 
-	iterator.Close()
+	defer iterator.Close()
 
 	// buffer is a JSON array containing QueryResults
 	var buffer bytes.Buffer
