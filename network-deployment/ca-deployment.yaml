@@ -16,7 +16,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: caorg1
-  labels: 
+  labels:
     app: caorg1
 spec:
   replicas: 1
@@ -57,6 +57,8 @@ spec:
           value: /certs/ca0a-key.pem
         - name: GODEBUG
           value: "netdns=go"
+        - name: CORE_CHAINCODE_BUILDER
+          value: hyperledger/fabric-ccenv:1.4
         volumeMounts:
         - mountPath: /shared
           name: myvolume
