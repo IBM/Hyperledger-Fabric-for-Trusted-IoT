@@ -2,7 +2,7 @@
 
 DOCKERHUB_ID:=
 IMG_NAME:="hyperledger-iot-nodered"
-IMG_VERSION:="1.0.2"
+IMG_VERSION:="1.0.3"
 ARCH:="amd64"
 
 # Store the secrets in a .env file  (see ./.env.example)
