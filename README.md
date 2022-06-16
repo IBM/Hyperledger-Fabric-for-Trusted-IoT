@@ -1,5 +1,7 @@
 # Hyperledger Fabric for Trusted IoT
 
+- EOL - No longer under maintenance
+
 ## Architecture Flow
 
 <p align="center"><img src="docs/architecture.png"></p>
