@@ -1,13 +1,15 @@
-FROM registry.access.redhat.com/ubi8:8.4 as build
+FROM registry.access.redhat.com/ubi8:8.6 as build
 LABEL stage=builder
 
-RUN  dnf module install --nodocs -y nodejs:14 python39 --setopt=install_weak_deps=0 --disableplugin=subscription-manager \
+RUN  dnf module install --nodocs -y nodejs:16 python39 --setopt=install_weak_deps=0 --disableplugin=subscription-manager \
     && dnf install --nodocs -y git make gcc gcc-c++  --setopt=install_weak_deps=0 --disableplugin=subscription-manager \
     && dnf clean all --disableplugin=subscription-manager
 
 RUN mkdir -p /opt/app-root/src
 WORKDIR /opt/app-root/src
 COPY ./package.json /opt/app-root/src/package.json
+# Prevent "npm ERR! code ERR_SOCKET_TIMEOUT" by upgrading from npm 8.3 to >= npm 8.5.1
+RUN npm install --no-audit --no-update-notifier --no-fund --production -g npm@8.12.2
 RUN npm install --no-audit --no-update-notifier --no-fund --production
 
 COPY ./server.js /opt/app-root/src/
@@ -16,7 +18,7 @@ COPY ./node-red_flow.json /opt/app-root/src/flow.json
 COPY ./flow_cred.json /opt/app-root/src/flow_cred.json
 
 ## Release image
-FROM registry.access.redhat.com/ubi8/nodejs-14-minimal:1
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1
 
 COPY --from=build /opt/app-root/src /opt/app-root/src/
 

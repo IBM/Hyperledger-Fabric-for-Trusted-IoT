@@ -12,27 +12,27 @@
 4. Endorser Peers executes the functions that is defined in the chaincode according the request and sends is to the Orderer.
 5. Orderer creates the blocks and sends it back to the Anchor Peers which will broadcast the blocks to the Endorser Peers.
 
-> Note: In this case, CouchDBs are in use as state database.
+> Note: In this case, CouchDBs are used as the state database.
 
 ## Included Components
 
-* [IBM Cloud Kubernetes Service](https://www.ibm.com/cloud/container-service) delivers powerful tools by combining Docker containers, the Kubernetes technology, an intuitive user experience, and built-in security and isolation to automate the deployment, operation, scaling, and monitoring of containerized apps in a cluster of compute hosts.
-* [Node-RED](https://nodered.org/) is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
+- [IBM Cloud Kubernetes Service](https://www.ibm.com/cloud/container-service) delivers powerful tools by combining Docker containers, the Kubernetes technology, an intuitive user experience, and built-in security and isolation to automate the deployment, operation, scaling, and monitoring of containerized apps in a cluster of compute hosts.
+- [Node-RED](https://nodered.org/) is a programming tool for wiring together hardware devices, APIs and online services in new and interesting ways.
 
 ## Featured Technologies
 
-* [Hyperledger Fabric v1.4](https://hyperledger-fabric.readthedocs.io/en/release-1.4/) is a platform for distributed ledger solutions underpinned by a modular architecture delivering high degrees of confidentiality, resiliency, flexibility, and scalability.
-* [GoLang](https://golang.org) is an open source programming language that makes it easy to build simple, reliable, and efficient software.
-* [Node.js](https://nodejs.org/en/) is an open source, cross-platform runtime environment for developing server-side and networking applications.
+- [Hyperledger Fabric v1.4](https://hyperledger-fabric.readthedocs.io/en/release-1.4/) is a platform for distributed ledger solutions underpinned by a modular architecture delivering high degrees of confidentiality, resiliency, flexibility, and scalability.
+- [GoLang](https://golang.org) is an open source programming language that makes it easy to build simple, reliable, and efficient software.
+- [Node.js](https://nodejs.org/en/) is an open source, cross-platform runtime environment for developing server-side and networking applications.
 
 ## Running the application
 
 ### Prerequisites
 
-* [IBM Cloud Account](https://cloud.ibm.com/)
-* [IBM Cloud CLI](https://cloud.ibm.com/docs/cli)
-* [Docker](https://docs.docker.com/install/)
-* [Texas Instruments SensorTag](http://www.ti.com/tools-software/sensortag.html#)
+- [IBM Cloud Account](https://cloud.ibm.com/)
+- [IBM Cloud CLI](https://cloud.ibm.com/docs/cli)
+- [Docker](https://docs.docker.com/install/)
+- [Texas Instruments SensorTag](http://www.ti.com/tools-software/sensortag.html#)
 
 > Note: If you are not able to provide SensorTag, it is possible to generate data in the Node-RED dashboard steps.
 
@@ -64,7 +64,7 @@ $ cd Hyperledger-IoT
 
 As Hyperledger Fabric is a network consists of several components, we use microservice architecture on IBM Cloud Kubernetes Service.
 
-#### 2.1. Create a Kubernetes Cluster on IBM Cloud
+#### 2.1 Create a Kubernetes Cluster on IBM Cloud
 
 Create a Kubernetes Cluster from [here](https://cloud.ibm.com/kubernetes/catalog/cluster/create).
 
@@ -74,11 +74,11 @@ Create a Kubernetes Cluster from [here](https://cloud.ibm.com/kubernetes/catalog
 >
 > Note3: It can take up to 15 minutes for the cluster to be set up and provisioned.
 
-#### 2.2. Gain access to your Cluster
+#### 2.2 Gain access to your Cluster
 
-Once your cluster provisioned (status set to normal), perform the “Gain Access to your Cluster” steps.
+Once your cluster provisioned (status set to normal), perform the "Gain Access to your Cluster" steps.
 
-* Execute the following command to verify that the kubectl commands run properly.
+- Execute the following command to verify that the kubectl commands run properly.
 
 ```bash
 $ kubectl get nodes
@@ -88,13 +88,13 @@ $ kubectl get nodes
 
 ### 3. Deploy Hyperledger Fabric
 
-#### 3.1. Create PV and PVC
+#### 3.1 Create PV and PVC
 
 A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator. A PersistentVolumeClaim (PVC) is a request for storage by a user. We will use this storage to store our configuration files and chaincode.
 
 ##### Option 1
 
-* If you have **Free Cluster** use the following command.
+- If you have **Free Cluster** use the following command.
 
 ```bash
 $ cd volume
@@ -105,7 +105,7 @@ persistentvolume/myvolume created
 
 ##### Option 2
 
-* If you have **Standard Cluster**, first change the region and zone variables inside the createPVC.yaml according to your cluster location and use the following command.
+- If you have **Standard Cluster**, first change the region and zone variables inside the createPVC.yaml according to your cluster location and use the following command.
 
 ```bash
 $ cd volume
@@ -117,7 +117,7 @@ persistentvolumeclaim/filepvc created
 
 <p align="center"><img src="docs/screen2.png"></p>
 
-#### 3.2. Copy Artifacts
+#### 3.2 Copy Artifacts
 
 Once our PV and PVC are created, you are able to copy the local files to the storage on the cloud.
 
@@ -135,34 +135,34 @@ After your copyartifacts pod become completed, you can continue with the followi
 
 <p align="center"><img src="docs/screen3.png"></p>
 
-#### 3.3. Generating Hyperledger Fabric key materials and channel config related artifacts
+#### 3.3 Generating Hyperledger Fabric key materials and channel config related artifacts
 
 Cryptogen is an utility for generating Hyperledger Fabric key material. It is provided as a means of preconfiguring a network for testing purposes. The configtxgen command allows users to create and inspect channel config related artifacts.
 
 > Note: In the following steps, wait your jobs status to become completed to prevent any conflicts. You can see your pod status by executing "kubectl get pods"
 
-* The following command will generate MSPs (Membership Service Providers)
+- The following command will generate MSPs (Membership Service Providers)
 
 ```bash
 $ kubectl apply -f generateCryptoConfig.yaml
 job.batch/generate-cryptoconfig created
 ```
 
-* The following command will generate 'genesis.block' which will be used to deploy Orderer.
+- The following command will generate 'genesis.block' which will be used to deploy Orderer.
 
 ```bash
 $ kubectl apply -f generateGenesisBlock.yaml
 job.batch/generate-genesisblock created
 ```
 
-* The following command will generate 'channel1.tx' which will be used to create channel.
+- The following command will generate 'channel1.tx' which will be used to create channel.
 
 ```bash
 $ kubectl apply -f generateChanneltx.yaml
 job.batch/generate-channeltx created
 ```
 
-* The following command will generate 'Org1MSPanchors.tx' and 'Org2MSPanchors.tx' which will be used to set the Anchor Peers in the network.
+- The following command will generate 'Org1MSPanchors.tx' and 'Org2MSPanchors.tx' which will be used to set the Anchor Peers in the network.
 
 ```bash
 $ kubectl apply -f generateAnchorPeerMSPs.yaml
@@ -173,7 +173,7 @@ job.batch/generateanchorpeermsps created
 
 <p align="center"><img src="docs/screen4.png"></p>
 
-#### 3.4. Network Deployment
+#### 3.4 Network Deployment
 
 You have completed prerequired steps for the network deployment. Now, you will deploy the Hyperledger Fabric components, Certificate Authority, Orderer, and Peers to your cluster.
 
@@ -198,13 +198,13 @@ deployment.apps/org2peer2 created
 
 <p align="center"><img src="docs/screen5.png"></p>
 
-#### 3.5. Network Configuration
+#### 3.5 Network Configuration
 
 You should have your Hyperledger Fabric components are running. In the following steps, we will configure these components according to our use case.
 
 > Note: In the following steps, wait your jobs status to become completed to prevent any conflicts. You can see your pod status by executing "kubectl get pods"
 
-* The following command will create a channel named 'channel1'
+- The following command will create a channel named 'channel1'
 
 ```bash
 $ cd ../jobs
@@ -212,7 +212,7 @@ $ kubectl apply -f create_channel.yaml
 job.batch/createchannel created
 ```
 
-* The following command will join all the peers to the 'channel1'
+- The following command will join all the peers to the 'channel1'
 
 ```bash
 $ kubectl apply -f join_channel.yaml
@@ -221,21 +221,21 @@ job.batch/joinchannel created
 
 <p align="center"><img src="docs/screen6.png"></p>
 
-* The following command will install chaincode to peers (org1peer2, org2peer2). These peers will be your endorser peer.
+- The following command will install chaincode to peers (org1peer2, org2peer2). These peers will be your endorser peer.
 
 ```bash
 $ kubectl apply -f chaincode_install.yaml
 job.batch/chaincodeinstall created
 ```
 
-* The following command will instantiate the installed chaincode to the channel. Besides, sets the endorsement policy as requests 1 signature from each of the two organizations.
+- The following command will instantiate the installed chaincode to the channel. Besides, sets the endorsement policy as requests 1 signature from each of the two organizations.
 
 ```bash
 $ kubectl apply -f chaincode_instantaite.yaml
 job.batch/chaincodeinstantiate created
 ```
 
-* The following command will update the channel and will set peers (org1peer1, org2peer1) as Anchor Peers.
+- The following command will update the channel and will set peers (org1peer1, org2peer1) as Anchor Peers.
 
 ```bash
 $ kubectl apply -f updateAnchorPeers.yaml
@@ -252,10 +252,10 @@ Up until now, you have developed Hyperledger Fabric Network which might be a bac
 
 #### 4.1 Build Docker image for Rest API
 
-* The following commands will create a container image and push it to your container registry.
+- The following commands will create a container image and push it to your container registry.
 
 ```bash
-$ cd ../API
+$ cd ../API
 $ docker build . -t <your_account_name>/rest-api
 $ docker push <your_account_name>/rest-api
 ```
@@ -263,7 +263,7 @@ $ docker push <your_account_name>/rest-api
 <p align="center"><img src="docs/screen8.png"></p>
 <p align="center"><img src="docs/screen9.png"></p>
 
-* If you are using a private registry, the Kubernetes Service needs permissions to pull your private container image from your registry.  You can provide the Kubernetes Service with your docker secrets by running this command:
+- If you are using a private registry, the Kubernetes Service needs permissions to pull your private container image from your registry.  You can provide the Kubernetes Service with your docker secrets by running this command:
 
 ```bash
 $ kubectl create secret docker-registry regcred --docker-server=<your-registry-server> --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
@@ -294,9 +294,9 @@ Node-RED dashboard will be your front-end. You will be able to see incoming sens
 >
 > Note: If you wish to use Node-RED service you can import the flow by using [this](./node-red/node-red_flow.json)
 
-* The following commands will build the Node-RED container image and push it to DockerHub, create a deployment named "node-red", then create a Kubernetes Service which exposes this deployment
+- The following commands will build the Node-RED container image and push it to DockerHub, create a deployment named "node-red", then create a Kubernetes Service which exposes this deployment
 
-* Edit the `Makefile` and enter your `DOCKERHUB_ID:=`
+- Edit the `Makefile` and enter your `DOCKERHUB_ID:=`
 
 ```bash
 $ cd node-red
@@ -309,7 +309,7 @@ deployment.apps/node-red created
 
 #### Option 1
 
-* If you have **Free Cluster** use the following command to make nodered deployment accessible from the network.
+- If you have **Free Cluster** use the following command to make nodered deployment accessible from the network.
 
 ```bash
 $ kubectl apply -f node-red-svc-nodePort.yaml
@@ -318,7 +318,7 @@ service/node-red created
 
 #### Option 2
 
-* If you have a **Standard Cluster**, IBM Cloud will provide you an Ingress Controller and Application Load Balancer which you can use to access your cluster from network. So that, you need to create ingress rules by following.
+- If you have a **Standard Cluster**, IBM Cloud will provide you an Ingress Controller and Application Load Balancer which you can use to access your cluster from network. So that, you need to create ingress rules by following.
 
 Note that, you must modify **hosts** and the **secretName** fields in the "create-ingress.yaml". To learn your Ingress Subdomain and Ingress Secret execute the following commands.
 
@@ -357,8 +357,8 @@ If you have Free Cluster follow the below instructions to access to dashboard.
 First, execute the below commands to get your Kubernetes Worker Node's external IP.
 
 ```bash
-$ kubectl get pods -o wide
-$ kubectl get nodes -o wide
+$ kubectl get pods -o wide
+$ kubectl get nodes -o wide
 ```
 
 <p align="center"><img src="docs/screen11.png"></p>
@@ -369,13 +369,17 @@ Open your favorite browser and navigate to "Your_external_IP":30002 which will e
 
 If you have Standard Cluster just navigate to host name of your cluster from the browser. For example, node-red.{{INGRESS-SUBDOMAIN}}.us-south.containers.appdomain.cloud
 
+```bash
+$ kubectl get ingress
+```
+
 ### Registration
 
 Execute the three HTTP Post request respectively.
 
-* First POST will enroll an admin named "admin" to the Certificate Authority of the Organization 1.
-* Second POST will enroll a register and enroll user named "user1" to the Certificate Authority of the Organization 2.
-* Third POST Will register a new sensor which will be used to collect the data from.
+- First POST will enroll an admin named "admin" to the Certificate Authority of the Organization 1.
+- Second POST will enroll a register and enroll user named "user1" to the Certificate Authority of the Organization 2.
+- Third POST Will register a new sensor which will be used to collect the data from.
 
 You will end up with a screen as below. You can see the returning results on the right-hand side.
 
@@ -401,9 +405,9 @@ Here is the screenshots of the final views of the application.
 
 Instead developing an application with full capabilities, this minimum viable product is much more understandable and instructive. However, it can be extended with several modifications.
 
-* Adding new functions to chaincode will bring new features to the application
-* According to new functions, API endpoints needed to be updated to fulfill the HTTP requests
-* Dashboard must be modified depending on the incoming MQTT data
+- Adding new functions to chaincode will bring new features to the application
+- According to new functions, API endpoints needed to be updated to fulfill the HTTP requests
+- Dashboard must be modified depending on the incoming MQTT data
 
 ## License
 
