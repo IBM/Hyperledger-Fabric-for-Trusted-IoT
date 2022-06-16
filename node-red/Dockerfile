@@ -8,6 +8,8 @@ RUN  dnf module install --nodocs -y nodejs:16 python39 --setopt=install_weak_dep
 RUN mkdir -p /opt/app-root/src
 WORKDIR /opt/app-root/src
 COPY ./package.json /opt/app-root/src/package.json
+# Prevent "npm ERR! code ERR_SOCKET_TIMEOUT" by upgrading from npm 8.3 to >= npm 8.5.1
+RUN npm install --no-audit --no-update-notifier --no-fund --production -g npm@8.12.2
 RUN npm install --no-audit --no-update-notifier --no-fund --production
 
 COPY ./server.js /opt/app-root/src/
